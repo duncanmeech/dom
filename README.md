@@ -132,8 +132,7 @@ const list = D(`<div>I am a DIV</div>`);
 
 ```javascript
 \\ list containing a single two DIV tags, each DIV as one child paragraph which is not in the list
-const list = D(
-                `<div>
+const list = D(`<div>
                     <p>Paragraph 1</p>
                 </div>
                 `<div>
@@ -141,6 +140,20 @@ const list = D(
                 </div>`);
 ```
 
+```javascript
+\\ list containing a single DIV with a random number as its inner text content
+const list = D(`<p>${Math.random()}</p>`);
+```
+
+```javascript
+// produce an unorder lists which each word from an array as the items
+
+const words = ["The", "Quick", "Brown", "Fox"];
+D(`<ul>${words.reduce((prev, word) => prev + `<li>${word}</li>`, '')}</ul>`)
+
+// produces..."<ul><li>The</li><li>Quick</li><li>Brown</li><li>Fox</li></ul>
+// which when passed to the D constructor returns a list with a single UL tab present.
+```
 
 
 
