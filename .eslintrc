@@ -1,0 +1,53 @@
+{
+  "ecmaFeatures": {
+    "jsx": true,
+    "modules": true
+  },
+  "env": {
+    "browser": true
+  },
+  "parser": "babel-eslint",
+  "rules": {
+    "indent": [
+      "error",
+      2
+    ],
+    "spaced-comment": [
+      0,
+      "always"
+    ],
+    "no-use-before-define": [
+      2,
+      "nofunc"
+    ],
+    "no-unused-vars": [
+      2,
+      {
+        "vars": "all",
+        "args": "none"
+      }
+    ],
+    "new-cap": [
+      2,
+      {
+        "capIsNewExceptions": [
+          "CW",
+          "CH",
+          "D"
+        ]
+      }
+    ],
+    "comma-dangle": [
+      2,
+      "always"
+    ],
+    "no-unreachable": 2,
+    "no-console": 2,
+    "no-debugger": 2,
+    "no-alert": 1,
+    "quotes": [
+      "error",
+      "single"
+    ]
+  }
+}
