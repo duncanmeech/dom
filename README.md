@@ -88,6 +88,9 @@ for(let i = 0; i < list.length; i += 1 ) {
     console.log(list[i])
 }
 ```
+Also of note is that the resulting Array is NEVER a live list. Subsequent changes to the DOM will not have any 
+effect on the items in the array.
+Finally, the list is not immutable. You can add/remove elements to the list using push, pop, splice etc.
 
 # Creating instances of DOM.
 
@@ -111,6 +114,31 @@ NOTE: The class provides the read only property `el` to access the first element
 [0]. Therefore the following code is identical to the previous block
 ```javascript
 const list = D('span', D('p').el);
+```
+
+### 2. DOM Literals
+
+One or more DOM elements can be constructed from a template using either traditional JavaScript strings or better yet
+template literal strings from ES6. Internally the DOM library uses `insertAdjacentHTML` to create the elements.
+Only the top level elements in the template will be part of the list. Using template literal strings has the added
+benefit that the templates can be easily parameterized.
+
+The following examples all produce lists with one or more top level elements.
+
+```javascript
+\\ list containing a single DIV tag
+const list = D(`<div>I am a DIV</div>`);
+```
+
+```javascript
+\\ list containing a single two DIV tags, each DIV as one child paragraph which is not in the list
+const list = D(
+                `<div>
+                    <p>Paragraph 1</p>
+                </div>
+                `<div>
+                    <p>Paragraph 2</p>
+                </div>`);
 ```
 
 
