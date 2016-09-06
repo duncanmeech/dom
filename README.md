@@ -34,18 +34,84 @@ applications developed in ES7 since it takes advantage of several advances in th
 Although the library will shortly be converted to an NPM module the best way to use it right now is to just
 take dom.js into your app and require or import it e.g.
 
-`import D from '../dom/dom';`
+```javascript
+import D from '../dom/dom';
+```
 
 To assist with condensing your code the actual export from the module is a function that simply calls the constructor
 and passes along your arguments i.e.
 
-`export default function() {
+```javascript
+export default function() {
   return new ElementList(...arguments);
-};`
+};
+```
+
+This simply removes the requirement to use the `new` keyword when creating instances of DOM ( which I usually just
+import as D ).
 
 
 # Array Inheritance
 
+The fundamental architecture of DOM is to use inheritance of the native Array class to create a specialized Array
+type for DOM manipulation. Inheritance of native types is a new feature of ES7. ES7 is not at this time supported
+natively by any browsers so you application will need to be compiled with a library such as Babel / Webpack using
+additional support for Array inheritance. 
+
+You application will need to configuring similar to this module for 
+correct compilation. My webpack configuration is here for reference: https://github.com/duncanmeech/dom/blob/master/webpack.config.js
+
+The considerable benefit of inheriting from the native Array class is that once a instance if constructed all the
+native array methods are available to you e.g. forEach, map, reduce, filter. Naturally you can use array indexing to
+access the individual elements of a list as well. The following all use a list of DIV tags and array methods.
+
+Using forEach on DOM instance...
+```javascript
+D('div').forEach(div => {
+   console.log(div);
+});
+```
+
+
+Using filter on a DOM instance...
+```javascript
+const greenDivs = D('div').filter(div => {
+   return div.className = 'green';
+});
+```
+
+
+Using array indexing on a DOM instance...
+```javascript
+const list = D('div');
+for(let i = 0; i < list.length; i += 1 ) {
+    console.log(list[i])
+}
+```
+
+# Creating instances of DOM.
+
+You can construct instances of DOM in three different ways.
+
+### 1. CSS Selectors
+
+Taking a page from the JQuery notebook, you can construct DOM instances using any acceptable CSS selector. You may optionally
+provide a root element to begin the search from. Otherwise the document object is assumed to be the root of the search.
+The following are all examples of using CSS selectors
+
+Select all the DIV tags in the document
+```javascript
+const list = D('div');
+```
+Select all the SPAN tags within the first paragraph on the page
+```javascript
+const list = D('span', D('p')[0]);
+```
+NOTE: The class provides the read only property `el` to access the first element in a list which often looks cleaner than
+[0]. Therefore the following code is identical to the previous block
+```javascript
+const list = D('span', D('p').el);
+```
 
 
 
