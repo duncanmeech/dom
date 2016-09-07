@@ -13,7 +13,7 @@ large number of constantly changing DOM elements.
 The alternative is approach is to use the browsers native APIs which deliver optimal performance at the expense of ease of use.
 The native APIs suffer from a number of small deficiencies some of which include:
  
-1. Relatively simple tasks which can require large, pedantic code blocks e.g. multiple calls to document.createElement/HTMLElement.appendChild.
+1. Relatively simple tasks which can require large, pedantic code blocks e.g. multiple calls to document.createElement/HTMLElement.appendChild etc.
 2. Iteration often requires conversion of browser data structures to array e.g. Array.prototype.slice.call(document.querySelectorAll('.some-class')).forEach...
 3. Native browser APIs sometimes return static lists but many times return live lists ( e.g.. getElementsByClassName verus querySelectorAll ) which can
    cause subtle bugs if the list is stored for later iteration.
@@ -275,6 +275,31 @@ on the fly from a list of names of properties and methods in the dom.js file. Yo
 and method not already supported simply by adding their names to the list. In the case of properties preceed the name
 with r+ for read only properties.
 
+### Helper Functions
+
+The intent of DList is to be very lightweight. Hence we incorporate native Array methods with a simple
+pass through mechanism to native properties and methods. Occasionally however, it is useful to
+add a custom API where it useful in condensing and simplifying your code. The following methods
+are available on all DList instances:
+
+1. empty - remove all children from the top level elements in the list
+2. remove - remove all top elements from their parents.
+3. traverse - invoke a callback for every element and their children, in the list.
+4. addClasses - add the space separated list of class names to the elements classList property.
+5. removeClass - opposite of above.
+6. classesConditional - add/remove classes according to the truthiness of the second parameter.
+7. clone - return a new DList instance containing a deep clone of each top level element.
+8. setStyles - one of the most useful ( equivalent to the JQuery method .css ). Given an object with
+      various key/value pairs, apply them as style properties to the elements in the list e.g.
+      
+```javascript
+    D('<div></div><p></p><span></span>').setStyles({
+        marginLeft: '10px',
+        color: 'dodgerblue',
+        borderRadius: '5px',
+    });
+```
+
 ### Zipping and Unzipping DList instances.
 
 Zipping refers to binding references to DOM elements to another object and adding event handlers in a declarative way.
@@ -317,7 +342,39 @@ that might have been added with .on
 
 ### Putting it all together.
 
+In the following snippet a class instance is constructed and supplied with a parent DOM element. It then constructs
+its DOM structure and binds the red span to an instance property and changes to the input element to an instance
+method. The resulting components responds to changes to the input by reflecting its content into the red span.
 
+```javascript
+
+  class DListDemo(parent) {
+      
+     D(parent).empty();
+
+    // add a style sheet to the head of the document, or we could use a scoped css block directly on the template.
+    const css = D(`<style type="text/css">
+                       .red { color: red; margin-right: 1rem; } 
+                    </style>`);
+
+    document.head.appendChild(css.el);
+
+    const template = D(`<div>
+                            <span class="red" data-ref="redSpan">Red Span</span>
+                            <input type="text" data-event-input="onInput"/>
+                         </div>`);
+    parent.appendChild(template.el);
+    template.zip(this);
+    this.redSpan.setStyles({
+      fontSize: '3rem',
+    });
+  }
+
+  onInput = (event) => {
+    this.redSpan.innerText = event.target.value;
+  }
+  // ... rest of class
+```
 
 
 
