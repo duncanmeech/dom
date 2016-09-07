@@ -155,7 +155,77 @@ D(`<ul>${words.reduce((prev, word) => prev + `<li>${word}</li>`, '')}</ul>`)
 // which when passed to the D constructor returns a list with a single UL tab present.
 ```
 
+### 3. Passing explicit DOM elements or other D lists.
 
+You can also just pass raw DOM elements to the construct or even other D list instances or a combination of both.
+This is often useful since it allows you to aggregate disparate DOM elements that are not related by CSS selector or
+DOM position into a single list e.g.
+
+```javascript
+// make an array containing the document head and body
+const headAndBody = D(document.body, document.head);
+```
+
+```javascript
+// a D list that concatenates three other lists constructed from CSS attribute selectors and all the inputs on the page.
+const list = D(D('[data-button]'), D('[data-anchor]'), D('input'));
+```
+
+## Event Binding
+
+Using the native addEventListener and removeEventListener can be problematic if you are dynamically adding and removing
+elements to the DOM. Leaving event listeners attached to elements are they are removed from the DOM can cause memory leaks
+or worse exceptions when a callback is trigger on an object you thought was disposed. The D library provides a more
+robust wrapper to these functions called on and off. 
+```javascript
+
+// listen for focus events on the document body
+D(document.body).on('focus', event => console.log('body focused'));
+```
+
+Since we expect the library to be called from an ES7 app there is no context parameter for the callback since that is
+automatic with fat arrow functions. Naturally you can use Function.prototype.bind for explicity bindings e.g.
+
+```javascript
+D('#button-one').on('click', function(event, number) {
+   // prints 'one'.
+   console.log(number);
+}.bind(this, 'one')
+```
+
+Of course events are added to all the top level members of the list e.g.
+```javascript
+D('input').on('focus', event => {
+    // prints the value in any input element when focused
+    console.log(event.target.value);
+});
+```
+
+There is an optional capture parameter which corresponds to the capture parameter of the add/removeEventListener APIs e.g.
+```javascript
+D('.user-interface').on('mousedown', event => console.log(event.pageX), true);
+```
+
+The real benefit of the on/off methods is that removing event listeners is much more robust. The off method
+can be called in two basic ways. The first is with no parameters in which case any event listeners for any event added
+with the .on method will be removed.
+
+```javascript
+const buttons = D('button');
+buttons.on('focus', e => console.log('focused'));
+buttons.on('blur', e => console.log('blur'));
+
+// we can remove both handlers from all buttons with
+buttons.off();
+
+// alternatively, we could remove just the blur handlers with..
+buttons.off('blur');
+
+```
+
+Internally the D list keeps track of all listeners added with the on method, including the state of the capture flag.
+When removing handlers, just like the native API, you should use the same capture flag to remove handlers as was used
+when adding the handler.
 
 # Build
 
