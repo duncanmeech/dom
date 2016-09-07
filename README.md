@@ -1,7 +1,7 @@
 # DOM 
 https://github.com/duncanmeech/dom
 
-DOM is a small library that I developed to assist with DOM manipulation in a browser running JavaScript. 
+DList is a small library that I developed to assist with DOM manipulation in a browser running JavaScript. 
 
 For the types of visualizations and interactive components that I typically develop performance is imperative and
 popular libraries such as ReactJS or Angular which attempt to conceal the update/render cycle from the programmer result in
@@ -28,7 +28,7 @@ suffers from poor performance in certain areas.
 
 # Implementation
 
-DOM attempts to address these issues with a very lightweight library ( < 7Kb optimized, < 0.5KLoc ). DOM is written for
+DList attempts to address these issues with a very lightweight library ( < 7Kb optimized, < 0.5KLoc ). DList is written for
 applications developed in ES7 since it takes advantage of several advances in the JavaScript standard.
 
 Although the library will shortly be converted to an NPM module the best way to use it right now is to just
@@ -47,13 +47,13 @@ export default function() {
 };
 ```
 
-This simply removes the requirement to use the `new` keyword when creating instances of DOM ( which I usually just
+This simply removes the requirement to use the `new` keyword when creating instances of DList ( which I usually just
 import as D ).
 
 
 # Array Inheritance
 
-The fundamental architecture of DOM is to use inheritance of the native Array class to create a specialized Array
+The fundamental architecture of DList is to use inheritance of the native Array class to create a specialized Array
 type for DOM manipulation. Inheritance of native types is a new feature of ES7. ES7 is not at this time supported
 natively by any browsers so you application will need to be compiled with a library such as Babel / Webpack using
 additional support for Array inheritance. 
@@ -73,7 +73,7 @@ D('div').forEach(div => {
 ```
 
 
-Using filter on a DOM instance...
+Using filter on a DList instance...
 ```javascript
 const greenDivs = D('div').filter(div => {
    return div.className = 'green';
@@ -81,7 +81,7 @@ const greenDivs = D('div').filter(div => {
 ```
 
 
-Using array indexing on a DOM instance...
+Using array indexing on a DList instance...
 ```javascript
 const list = D('div');
 for(let i = 0; i < list.length; i += 1 ) {
@@ -92,13 +92,13 @@ Also of note is that the resulting Array is NEVER a live list. Subsequent change
 effect on the items in the array.
 Finally, the list is not immutable. You can add/remove elements to the list using push, pop, splice etc.
 
-# Creating instances of DOM.
+# Creating instances of DList.
 
 You can construct instances of DOM in three different ways.
 
 ### 1. CSS Selectors
 
-Taking a page from the JQuery notebook, you can construct DOM instances using any acceptable CSS selector. You may optionally
+Taking a page from the JQuery notebook, you can construct DList instances using any acceptable CSS selector. You may optionally
 provide a root element to begin the search from. Otherwise the document object is assumed to be the root of the search.
 The following are all examples of using CSS selectors
 
@@ -119,9 +119,9 @@ const list = D('span', D('p').el);
 ### 2. DOM Literals
 
 One or more DOM elements can be constructed from a template using either traditional JavaScript strings or better yet
-template literal strings from ES6. Internally the DOM library uses `insertAdjacentHTML` to create the elements.
+template literal strings from ES6. Internally the DList library uses `insertAdjacentHTML` to create the elements.
 Only the top level elements in the template will be part of the list. Using template literal strings has the added
-benefit that the templates can be easily parameterized.
+benefit that the templates can be easily parametrized.
 
 The following examples all produce lists with one or more top level elements.
 
@@ -152,12 +152,12 @@ const words = ["The", "Quick", "Brown", "Fox"];
 D(`<ul>${words.reduce((prev, word) => prev + `<li>${word}</li>`, '')}</ul>`)
 
 // produces..."<ul><li>The</li><li>Quick</li><li>Brown</li><li>Fox</li></ul>
-// which when passed to the D constructor returns a list with a single UL tab present.
+// which when passed to the DList constructor returns a list with a single UL tab present.
 ```
 
 ### 3. Passing explicit DOM elements or other D lists.
 
-You can also just pass raw DOM elements to the construct or even other D list instances or a combination of both.
+You can also just pass raw DOM elements to the construct or even other DList instances or a combination of both.
 This is often useful since it allows you to aggregate disparate DOM elements that are not related by CSS selector or
 DOM position into a single list e.g.
 
@@ -223,7 +223,7 @@ buttons.off('blur');
 
 ```
 
-Internally the D list keeps track of all listeners added with the on method, including the state of the capture flag.
+Internally the DList keeps track of all listeners added with the on method, including the state of the capture flag.
 When removing handlers, just like the native API, you should use the same capture flag to remove handlers as was used
 when adding the handler.
 
@@ -231,7 +231,7 @@ when adding the handler.
 
 ### Properties
 
-The D list provides accessors for read and read-write properties of DOM element e.g. innerHTML. These accessors are
+The DList provides accessors for read and read-write properties of DOM element e.g. innerHTML. These accessors are
 bound dynamically to the list. If you list contains only one element the return value is identical to the native API.
 If you list contains more than one element you will get an array of results, one for each property in the list.
 
@@ -262,7 +262,63 @@ contains a single element then the return value is identical to the native API. 
 element an array of results is returned.
 
 ```javascript
-console.log(JSON.stringify(D('#my-div').getBoundingClientRect()
+console.log(D(document.body).getBoundingClientRect());
+// ... prints "[object ClientRect]"
+console.log(D(document.head, document.body).getBoundingClientRect());
+// ... prints "[[object ClientRect], [object ClientRect]]"
+```
+
+### Adding properties and Methods
+
+Rather than hand code each property and method that the native Node and HTMLElement classes expose that are created
+on the fly from a list of names of properties and methods in the dom.js file. You should be able to add properties
+and method not already supported simply by adding their names to the list. In the case of properties preceed the name
+with r+ for read only properties.
+
+### Zipping and Unzipping DList instances.
+
+Zipping refers to binding references to DOM elements to another object and adding event handlers in a declarative way.
+Zip and Unzip are methods than can be called on any DList. Here is any example of a simple component that constructs itself
+from a template literal string and then uses the zip method.
+
+```javascript
+    // construct our DOM as a DList
+    this.outer = D(
+      `<div class="viewer" tabindex="0" data-event-focus="onFocus" data-event-blur="onBlur">
+        <div class="menu" data-ref="menu">
+          <button data-ref="reverseStrandButton" data-event-click="onReverseStrandClicked">Reverse Strand</button>
+          <button data-ref="rulerButton" data-event-click="onRulerClicked">Ruler</button>
+          <button data-ref="flattenButton" data-event-click="onFlattenClicked">Flatten</button>
+        </div>
+        <div class="rows" data-ref="rowsContainer"></div>
+       </div>`
+    );
+    // bind elements and event handlers
+    this.outer.zip(this);
+    // attach to our parent element
+    this.parent.appendChild(this.outer.el);
+```
+
+In this example a shallow DOM structure is constructed with an outer DIV element of the class '.viewer'. This viewer
+element has DList specific attributes: data-event-focus and data-event-blur. These indicate that we are interested in
+binding the events 'focus' and 'blur' to some other object. When we can zip we specific the target object to bind with.
+In this case we simple pass 'this' since this method is a class instance method. The DList library then looks for the
+matching method(s) (onFocus and onBlur) and calls Node::addEventListener for each event, binding to the named handler.
+
+Any event can be bound to in this way. Just add the name of the event to the end of the attribute ( e.g. data-event-click )
+and the name of the method that handles the event on the target object.
+
+An another useful feature of zipping a template is that elements within the list can be bound to named properties on the target object.
+In the sample above various buttons include the attribute data-ref with a string value. After zipping to an object those
+elements can be accessed directly e.g. this.rulerButton.click();
+
+Unzip reverses that actions of zip. It unbinds event handlers and element bindings ( but not any additional event listeners 
+that might have been added with .on
+
+### Putting it all together.
+
+
+
 
 
 # Build
