@@ -227,6 +227,44 @@ Internally the D list keeps track of all listeners added with the on method, inc
 When removing handlers, just like the native API, you should use the same capture flag to remove handlers as was used
 when adding the handler.
 
+## Accessing native properties and calling native methods.
+
+### Properties
+
+The D list provides accessors for read and read-write properties of DOM element e.g. innerHTML. These accessors are
+bound dynamically to the list. If you list contains only one element the return value is identical to the native API.
+If you list contains more than one element you will get an array of results, one for each property in the list.
+
+```javascript
+const list = D('p');
+// if there is only one paragraph tag in the list the following will prints it innerText property
+console.log(list.innerText);
+// if there is more than one paragraph tag in the list the innerText getter will return an array of strings.
+console.log(Array.isArray(list.innerText));
+// .. prints true if the list contains more than one element.
+console.log(list.innerText.forEach(text => console.log(text);));
+// .. prints the inner text of all p tags in the list.
+
+```
+
+Writable properties work in the same fashion except there is no returned values. Writing to a properties
+is applied to all elements in the D list e.g.
+
+```javascript
+    // give all buttons the class .custom-button
+    D('button').className = 'custom-button';
+```
+
+### Methods
+
+Methods are implemented in a similar fashion to properties. You can call them directly on the list. If the list
+contains a single element then the return value is identical to the native API. If the list contains more than one
+element an array of results is returned.
+
+```javascript
+console.log(JSON.stringify(D('#my-div').getBoundingClientRect()
+
+
 # Build
 
 First...
