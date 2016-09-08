@@ -16,9 +16,15 @@ describe('DOM Library Tests', () => {
 
   // It easy to mess up the Karma/Webpack configuration. Ensure
   // that we can actually find and import the files we need.
+  // (if webpack is configured correctly it should inject its universal import code
+  //  at the top of the generated file )
+
+  // test importing a node module
   it('Node module import should work', () => {
     expect(path).not.toBe(null);
   });
+
+  // test that our own module imported
   it('Local module import should work', () => {
     expect(D).not.toBe(null);
   });
@@ -36,7 +42,6 @@ describe('DOM Library Tests', () => {
 
     // basic CSS selector for a single match
     let list = D('.ABC');
-    expect(list.length).toBe(1);
-
+    expect(list.length).toEqual(1);
   });
 });

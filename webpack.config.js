@@ -6,10 +6,10 @@ var webpack = require('webpack');
 const modules = {
   loaders: [
     {
-      test: /\.js$/,
+      test   : /\.js$/,
       exclude: /node_modules/,
-      loader: 'babel-loader',
-      query: {
+      loader : 'babel-loader',
+      query  : {
         presets: ['es2015', 'stage-0'],
         plugins: [
           ["babel-plugin-transform-builtin-extend", {
@@ -29,33 +29,12 @@ const entry = "./javascripts/dom.js";
 // ===========================================================================
 const debug = {
   entry,
-  output: {
-    filename: "./dist/index.js",
+  output : {
+    libraryTarget: 'umd',
+    filename     : "./dist/index.js",
   },
-  module: modules,
+  module : modules,
   devtool: "inline-source-map",
-};
-
-// ===========================================================================
-// for local development ( the watch option uses this ). I build the Library
-// into whatever project I want to test the library with.
-// ===========================================================================
-const dev = {
-  entry,
-  output: {
-    filename: "/Users/meechd/dev/seq-view/javascripts/dom/dom.js",
-  },
-  module: modules,
-  devtool: "inline-source-map",
-};
-
-
-// ===========================================================================
-// for test builds only. test enviroment must not have an entry point or
-// output destination for example.
-// ===========================================================================
-const test = {
-  module: modules,
 };
 
 // ===========================================================================
@@ -64,7 +43,8 @@ const test = {
 const release = {
   entry,
   output: {
-    filename: "./dist/index.js"
+    libraryTarget: 'umd',
+    filename     : "./dist/index.js"
   },
   module: Object.assign({}, modules, {
     preLoaders: [
@@ -72,9 +52,17 @@ const release = {
     ],
   }),
   eslint: {
-    configFile: './.eslintrc',
+    configFile : './.eslintrc',
     failOnError: true
   }
+};
+
+// ===========================================================================
+// for test builds only. test enviroment must not have an entry point or
+// output destination for example.
+// ===========================================================================
+const test = {
+  module: modules,
 };
 
 

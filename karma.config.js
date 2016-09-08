@@ -27,7 +27,6 @@ module.exports = function (config) {
     browsers: [ 'Chrome' ],
     preprocessors: {
       'tests/**/*_spec.js': ['webpack'],
-      'dist/**/*.js': ['webpack'],
     },
     reporters: [ 'spec', 'coverage' ],
     coverageReporter: {

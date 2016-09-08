@@ -87,6 +87,7 @@ const methods = [
 /**
  * the actual elements class which inherits from native Array
  */
+
 class ElementList extends Array {
   constructor(...args) {
     super();
@@ -440,6 +441,6 @@ class ElementList extends Array {
 /**
  * We export a factory function for ElementList so there is no need to the new operator
  */
-export default function() {
+export default function D() {
   return new ElementList(...arguments);
 };
