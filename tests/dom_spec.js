@@ -35,7 +35,7 @@ describe('DOM Library Tests', () => {
     document.body.insertAdjacentHTML('afterbegin', fixture);
 
     // basic CSS selector for a single match
-    let list = new D('.ABC');
+    let list = D('.ABC');
     expect(list.length).toBe(1);
 
   });
