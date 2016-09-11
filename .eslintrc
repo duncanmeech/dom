@@ -28,14 +28,7 @@
       }
     ],
     "new-cap": [
-      2,
-      {
-        "capIsNewExceptions": [
-          "CW",
-          "CH",
-          "D"
-        ]
-      }
+      2
     ],
     "comma-dangle": [
       2,

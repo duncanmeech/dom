@@ -24,6 +24,12 @@ const modules = {
 // entry point doesn't vary by build
 const entry = "./javascripts/dom.js";
 
+// output is common to all builds
+const output = {
+  libraryTarget: 'umd',
+  filename     : "./dist/index.js"
+};
+
 // ===========================================================================
 // debug builds a source map decorated, non minified version of the extension
 // ===========================================================================
@@ -42,10 +48,7 @@ const debug = {
 // ===========================================================================
 const release = {
   entry,
-  output: {
-    libraryTarget: 'umd',
-    filename     : "./dist/index.js"
-  },
+  output,
   module: Object.assign({}, modules, {
     preLoaders: [
       {test: /\.js$/, loader: "eslint-loader", exclude: /node_modules/}
@@ -59,7 +62,7 @@ const release = {
 
 // ===========================================================================
 // for test builds only. test enviroment must not have an entry point or
-// output destination for example.
+// output destination.
 // ===========================================================================
 const test = {
   module: modules,
@@ -70,18 +73,14 @@ const test = {
 const TARGET = process.env.npm_lifecycle_event;
 
 // now build the required target ( for debug/test mode )
-if (TARGET === 'debug') {
+if (TARGET === 'build:dev') {
   module.exports = debug;
+}
+
+if (TARGET === 'build:prod') {
+  module.exports = release;
 }
 
 if (TARGET === 'test') {
   module.exports = test;
-}
-
-if (TARGET === 'release') {
-  module.exports = release;
-}
-
-if (TARGET === 'watch') {
-  module.exports = dev;
 }

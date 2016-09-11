@@ -1,5 +1,6 @@
 // node
 import path from 'path';
+import 'core-js';
 import D from '../dist/index';
 
 describe('DOM Library Tests', () => {
@@ -30,18 +31,38 @@ describe('DOM Library Tests', () => {
   });
 
   // test that we can use a CSS selector to create lists.
-  it('Test CSS selectors', () => {
+  it('Test list creation with CSS selectors', () => {
     const fixture = `
       <div class="ABC">
-        <p class="XYZ"></p>
-        <span data-test="test"></span>
+        <p class="xyz">
+          <span class="xyz"></span>
+        </p>
       </div>
     `;
 
     document.body.insertAdjacentHTML('afterbegin', fixture);
 
     // basic CSS selector for a single match
-    let list = D('.ABC');
-    expect(list.length).toEqual(1);
+    const a = D('.ABC');
+    expect(a.length).toEqual(1);
+    // a selected rooted in other than document
+    const b = D('.xyz', a.el);
+    expect(b.length).toEqual(2);
+
+  });
+
+  // test that we can create elements with a template literal
+  it('Test list creation with template literals', () => {
+    const template = D(`<div class="ABC">
+                            <p class="xyz">
+                                <span class="xyz"></span>
+                            </p>
+                        </div>`);
+
+    D(document.body).appendChild(template.el);
+
+    expect(document.body.querySelectorAll('.ABC').length).toEqual(1);
+    expect(document.body.querySelectorAll('.xyz').length).toEqual(2);
+
   });
 });

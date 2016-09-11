@@ -129,7 +129,6 @@ class ElementList extends Array {
       }
     }
     // push all the elements list, no matter how it was created onto ourselves.
-    //elements.forEach(e => this.push(e));
     this.push(...elements);
 
     // setup read/write properties
@@ -151,8 +150,6 @@ class ElementList extends Array {
     methods.forEach(name => {
       this[name] = this.genericMethod.bind(this, name);
     });
-
-
   }
 
   /**
@@ -258,8 +255,8 @@ class ElementList extends Array {
    * At the same time look for data-event-* attributes and add event listeners.
    * e.g. data-event-input="onInput" will call
    * element.addEventListener('input', targetObject["onInput"].bind(targetObject))
-   * NOTE: The event handlers are not bound ( e.g. using .bind ) so you should use
-   * an es7 fat arrow function to ensure binding.
+   * NOTE: The event handlers are just named methods so .bind is called on the method
+   * to ensure 'this' is correct.
    */
   zip(targetObject) {
     // we could use a CSS selector to find the data-ref attributes but for
@@ -275,7 +272,7 @@ class ElementList extends Array {
       [...element.attributes,].forEach(attr => {
         const tokens = attr.localName.split('-');
         if (tokens[0] === 'data' && tokens[1] === 'event') {
-          element.addEventListener(tokens[2], targetObject[attr.value]);
+          element.addEventListener(tokens[2], targetObject[attr.value].bind(targetObject));
         }
       });
     });
@@ -418,19 +415,20 @@ class ElementList extends Array {
         delete this.listeners[event];
       } else {
         // remove the specific listener if it is present, by finding the record with the handler
+        // ( the capture flag must match as well )
         if (this.listeners[event]) {
-          let record;
-          this.listeners[event].forEach(record2 => {
-            if (record2.handler === handler) {
-              record = record2;
+          let matchedRecord;
+          this.listeners[event].forEach(record => {
+            if (record.handler === handler && record.capture === capture) {
+              matchedRecord = record;
             }
           });
-          if (record) {
-            this.listeners[event].delete(record);
-            this.forEach(n => n.removeEventListener(event, record.handler, record.capture));
+          if (matchedRecord) {
+            this.listeners[event].delete(matchedRecord);
+            this.forEach(n => n.removeEventListener(event, matchedRecord.handler, matchedRecord.capture));
           }
           // remove just this record
-          this.listeners[event].delete(record);
+          this.listeners[event].delete(matchedRecord);
         }
       }
     }
