@@ -4,7 +4,7 @@
   "private": false,
   "author": "Duncan Meech<duncanmeech@gmail.com>",
   "description": "Lightweight DOM manipulation.",
-  "keywords": ["DOM", "Array", "ES7", "Webpack", "Template"],
+  "keywords": ["DOM", "Array", "ES7", "Webpack", "Templates"],
   "repository": {
     "type": "git",
     "url": "git@github.com:duncanmeech/dom.git"
@@ -17,7 +17,7 @@
   "scripts": {
     "build:dev": "./node_modules/.bin/webpack",
     "build:prod": "./node_modules/.bin/webpack --optimize-minimize",
-    "test": "./node_modules/.bin/karma start --single-run --no-auto-watch karma.config.js"
+    "test": "npm run build:dev && ./node_modules/.bin/karma start --single-run --no-auto-watch karma.config.js"
   },
   "devDependencies": {
     "babel-core": "^6.11.4",

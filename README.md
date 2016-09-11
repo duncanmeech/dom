@@ -1,7 +1,7 @@
 # DOM 
 https://github.com/duncanmeech/dom
 
-DList is a small library that I developed to assist with DOM manipulation in a browser running JavaScript. 
+DOMArray is a small library that I developed to assist with DOM manipulation in a browser running JavaScript. 
 
 For the types of visualizations and interactive components that I typically develop performance is imperative and
 popular libraries such as ReactJS or Angular which attempt to conceal the update/render cycle from the programmer result in
@@ -28,7 +28,7 @@ suffers from poor performance in certain areas.
 
 # Implementation
 
-DList attempts to address these issues with a very lightweight library ( < 7Kb optimized, < 0.5KLoc ). DList is written for
+DOMArray attempts to address these issues with a very lightweight library ( < 7Kb optimized, < 0.5KLoc ). DOMArray is written for
 applications developed in ES7 since it takes advantage of several advances in the JavaScript standard.
 
 Although the library will shortly be converted to an NPM module the best way to use it right now is to just
@@ -47,13 +47,13 @@ export default function() {
 };
 ```
 
-This simply removes the requirement to use the `new` keyword when creating instances of DList ( which I usually just
+This simply removes the requirement to use the `new` keyword when creating instances of DOMArray ( which I usually just
 import as D ).
 
 
 # Array Inheritance
 
-The fundamental architecture of DList is to use inheritance of the native Array class to create a specialized Array
+The fundamental architecture of DOMArray is to use inheritance of the native Array class to create a specialized Array
 type for DOM manipulation. Inheritance of native types is a new feature of ES7. ES7 is not at this time supported
 natively by any browsers so you application will need to be compiled with a library such as Babel / Webpack using
 additional support for Array inheritance. 
@@ -73,7 +73,7 @@ D('div').forEach(div => {
 ```
 
 
-Using filter on a DList instance...
+Using filter on a DOMArray instance...
 ```javascript
 const greenDivs = D('div').filter(div => {
    return div.className = 'green';
@@ -81,7 +81,7 @@ const greenDivs = D('div').filter(div => {
 ```
 
 
-Using array indexing on a DList instance...
+Using array indexing on a DOMArray instance...
 ```javascript
 const list = D('div');
 for(let i = 0; i < list.length; i += 1 ) {
@@ -92,13 +92,13 @@ Also of note is that the resulting Array is NEVER a live list. Subsequent change
 effect on the items in the array.
 Finally, the list is not immutable. You can add/remove elements to the list using push, pop, splice etc.
 
-# Creating instances of DList.
+# Creating instances of DOMArray.
 
 You can construct instances of DOM in three different ways.
 
 ### 1. CSS Selectors
 
-Taking a page from the JQuery notebook, you can construct DList instances using any acceptable CSS selector. You may optionally
+Taking a page from the JQuery notebook, you can construct DOMArray instances using any acceptable CSS selector. You may optionally
 provide a root element to begin the search from. Otherwise the document object is assumed to be the root of the search.
 The following are all examples of using CSS selectors
 
@@ -119,7 +119,7 @@ const list = D('span', D('p').el);
 ### 2. DOM Literals
 
 One or more DOM elements can be constructed from a template using either traditional JavaScript strings or better yet
-template literal strings from ES6. Internally the DList library uses `insertAdjacentHTML` to create the elements.
+template literal strings from ES6. Internally the DOMArray library uses `insertAdjacentHTML` to create the elements.
 Only the top level elements in the template will be part of the list. Using template literal strings has the added
 benefit that the templates can be easily parametrized.
 
@@ -152,12 +152,12 @@ const words = ["The", "Quick", "Brown", "Fox"];
 D(`<ul>${words.reduce((prev, word) => prev + `<li>${word}</li>`, '')}</ul>`)
 
 // produces..."<ul><li>The</li><li>Quick</li><li>Brown</li><li>Fox</li></ul>
-// which when passed to the DList constructor returns a list with a single UL tab present.
+// which when passed to the DOMArray constructor returns a list with a single UL tab present.
 ```
 
 ### 3. Passing explicit DOM elements or other D lists.
 
-You can also just pass raw DOM elements to the construct or even other DList instances or a combination of both.
+You can also just pass raw DOM elements to the construct or even other DOMArray instances or a combination of both.
 This is often useful since it allows you to aggregate disparate DOM elements that are not related by CSS selector or
 DOM position into a single list e.g.
 
@@ -223,7 +223,7 @@ buttons.off('blur');
 
 ```
 
-Internally the DList keeps track of all listeners added with the on method, including the state of the capture flag.
+Internally the DOMArray keeps track of all listeners added with the on method, including the state of the capture flag.
 When removing handlers, just like the native API, you should use the same capture flag to remove handlers as was used
 when adding the handler.
 
@@ -231,7 +231,7 @@ when adding the handler.
 
 ### Properties
 
-The DList provides accessors for read and read-write properties of DOM element e.g. innerHTML. These accessors are
+The DOMArray provides accessors for read and read-write properties of DOM element e.g. innerHTML. These accessors are
 bound dynamically to the list. If you list contains only one element the return value is identical to the native API.
 If you list contains more than one element you will get an array of results, one for each property in the list.
 
@@ -277,10 +277,10 @@ with r+ for read only properties.
 
 ### Helper Functions
 
-The intent of DList is to be very lightweight. Hence we incorporate native Array methods with a simple
+The intent of DOMArray is to be very lightweight. Hence we incorporate native Array methods with a simple
 pass through mechanism to native properties and methods. Occasionally however, it is useful to
 add a custom API where it useful in condensing and simplifying your code. The following methods
-are available on all DList instances:
+are available on all DOMArray instances:
 
 1. empty - remove all children from the top level elements in the list
 2. remove - remove all top elements from their parents.
@@ -288,7 +288,7 @@ are available on all DList instances:
 4. addClasses - add the space separated list of class names to the elements classList property.
 5. removeClass - opposite of above.
 6. classesConditional - add/remove classes according to the truthiness of the second parameter.
-7. clone - return a new DList instance containing a deep clone of each top level element.
+7. clone - return a new DOMArray instance containing a deep clone of each top level element.
 8. setStyles - one of the most useful ( equivalent to the JQuery method .css ). Given an object with
       various key/value pairs, apply them as style properties to the elements in the list e.g.
       
@@ -300,14 +300,14 @@ are available on all DList instances:
     });
 ```
 
-### Zipping and Unzipping DList instances.
+### Zipping and Unzipping DOMArray instances.
 
 Zipping refers to binding references to DOM elements to another object and adding event handlers in a declarative way.
-Zip and Unzip are methods than can be called on any DList. Here is any example of a simple component that constructs itself
+Zip and Unzip are methods than can be called on any DOMArray. Here is any example of a simple component that constructs itself
 from a template literal string and then uses the zip method.
 
 ```javascript
-    // construct our DOM as a DList
+    // construct our DOM as a DOMArray
     this.outer = D(
       `<div class="viewer" tabindex="0" data-event-focus="onFocus" data-event-blur="onBlur">
         <div class="menu" data-ref="menu">
@@ -325,9 +325,9 @@ from a template literal string and then uses the zip method.
 ```
 
 In this example a shallow DOM structure is constructed with an outer DIV element of the class '.viewer'. This viewer
-element has DList specific attributes: data-event-focus and data-event-blur. These indicate that we are interested in
+element has DOMArray specific attributes: data-event-focus and data-event-blur. These indicate that we are interested in
 binding the events 'focus' and 'blur' to some other object. When we can zip we specific the target object to bind with.
-In this case we simple pass 'this' since this method is a class instance method. The DList library then looks for the
+In this case we simple pass 'this' since this method is a class instance method. The DOMArray library then looks for the
 matching method(s) (onFocus and onBlur) and calls Node::addEventListener for each event, binding to the named handler.
 
 Any event can be bound to in this way. Just add the name of the event to the end of the attribute ( e.g. data-event-click )
@@ -348,7 +348,7 @@ method. The resulting components responds to changes to the input by reflecting 
 
 ```javascript
 
-  class DListDemo(parent) {
+  class DOMArrayDemo(parent) {
       
      D(parent).empty();
 
@@ -386,17 +386,12 @@ First...
 
 ..and then for a debuggable, non minified build
 
-```npm run debug```
+```npm run build:dev```
 
 ..or for a minified production build
 
-```npm run release```
+```npm run build:prod```
 
-This will build ./dist/index.js
-The resulting bundle contains the entire extension including the CSS which is added to the document programmatically.
+.. to run all the tests.
 
-# Development
-
-For fast development, use...
-
-```npm run watch```
+```npm run test```

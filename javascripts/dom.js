@@ -1,4 +1,3 @@
-
 /**
  * simplest regex for identifying a tag string versus a selector string
  * @type {RegExp}
@@ -9,9 +8,9 @@ const tagRegex = new RegExp('\s*<([^>]+)>');
  * getters and setters are created for these properties. The class does not attempt to distinguish between
  * Node, Element, HTMLElement etc so these properties may or may not exist on any particular member of our list.
  * Read only properties are prefixed with 'r+'.
- * For ElementList's with exactly one item, the getter returns the value returned by the native property.
- * For ElementList's containing more than one item an array of results is returned.
- * Empty ElementList's return null
+ * For DOMArray's with exactly one item, the getter returns the value returned by the native property.
+ * For DOMArray's containing more than one item an array of results is returned.
+ * Empty DOMArray's return null
  * @type {string[]}
  */
 const properties = [
@@ -88,49 +87,35 @@ const methods = [
  * the actual elements class which inherits from native Array
  */
 
-class ElementList extends Array {
+class DOMArray extends Array {
   constructor(...args) {
     super();
-    // this will be the elements we wrap
-    let elements = [];
-    // arg 0 is a string
+    // test first argument to see if its a string
     const isString = typeof(args[0]) === 'string';
-    // arg 0 is a tag
+    // if its a string see if it a tag definition
     const isTag = isString && tagRegex.exec(args[0].trim());
 
-    // first option is first argument is a CSS selector string and second optional element is the root element to apply the selector to.
+    // first argument is a string but not a tag definition so we assume CSS selector
     if ((args.length === 1 || args.length == 2) && isString && !isTag) {
-      const root = args.length === 1 ? document : this.getNode(args[1]);
-      // return a proxy using the results of the selector as the initial array
-      elements = Array.from(root.querySelectorAll(args[0]));
+      this.createFromCSSSelector(args[0], args[1]);
     } else {
       // second option is that args if just a string e.g. '<div class="xyz"><p>Title</p></div>'
       // (white space is trimmed to determine if this might be a tag)
       if (args.length === 1 && isTag) {
-        // use a temporary DIV and insertAdjacentHTML to construct the DOM
-        const d = document.createElement('DIV');
-        d.insertAdjacentHTML('afterbegin', args[0]);
-        // normalize the context to remove extraneous white space
-        d.normalize();
-        // setup elements to wrap
-        elements = Array.from(d.childNodes);
-        // remove all the children of the temporary div, so that the newly created top level nodes will be unparented
-        while (d.firstChild) d.removeChild(d.firstChild);
+        this.createFromTAGDefinition(args[0]);
       } else {
-        // only remaining option is that each argument is a DOM node or possible another elements list
-        args.forEach(arg => {
-          if (arg instanceof ElementList) {
-            elements = elements.concat(arg);
-          } else {
-            elements.push(arg);
-          }
-        });
-        elements = args;
+        // must be raw elements or other DOMArray instances
+        this.createFromElements(...args);
       }
     }
-    // push all the elements list, no matter how it was created onto ourselves.
-    this.push(...elements);
+    // inject native property names and function names to the list
+    this.injectMethodsAndProperties();
+  }
 
+  /**
+   * bind the read/write properties common to most HTMLElements and Node instances to this object
+   */
+  injectMethodsAndProperties() {
     // setup read/write properties
     properties.forEach(p => {
       // property can be a name or 'r+' name for read only properties
@@ -149,6 +134,51 @@ class ElementList extends Array {
     // setup methods
     methods.forEach(name => {
       this[name] = this.genericMethod.bind(this, name);
+    });
+  }
+
+  /**
+   * create our elements list from a CSS selector and option root element ( either
+   * a native HTMLElement/Node or another DOMArray )
+   * @param selector
+   * @param rootElement
+   */
+  createFromCSSSelector(selector, rootElement) {
+    // use the given root element or the document
+    const root = rootElement ? this.getNode(rootElement) : document;
+    // return a proxy using the results of the selector as the initial array
+    this.push(...root.querySelectorAll(selector));
+  }
+
+  /**
+   * create the list from a template string e.g. '<div>A DIV<div><span>A Span</span>'
+   * @param template
+   */
+  createFromTAGDefinition(template) {
+    // use a temporary DIV and insertAdjacentHTML to construct the DOM
+    const d = document.createElement('DIV');
+    d.insertAdjacentHTML('afterbegin', template);
+    // normalize the context to remove extraneous white space
+    d.normalize();
+    // add childNode directly into our list
+    this.push(...d.childNodes);
+    // remove all the children of the temporary div, so that the newly created top level nodes will be unparented
+    while (d.firstChild) d.removeChild(d.firstChild);
+  }
+
+  /**
+   * create from a mixed list of elements or other DOMArray instances.
+   * @param args
+   */
+  createFromElements(...args) {
+    // only remaining option is that each argument is a DOM node or possible another elements list
+    args.forEach((arg, index) => {
+      console.log(`testing ${index}: ${arg.toString()}`);
+      if (arg instanceof DOMArray) {
+        this.push(...arg);
+      } else {
+        this.push(arg);
+      }
     });
   }
 
@@ -203,21 +233,24 @@ class ElementList extends Array {
     });
     return this;
   }
+
   /**
-   * if the obj is a ElementList then return the first member otherwise assume
+   * if the obj is a DOMArray then return the first member otherwise assume
    * the object is a node and return it.
    */
   getNode(obj) {
-    if (obj instanceof ElementList) return obj[0];
+    if (obj instanceof DOMArray) return obj[0];
     return obj;
   }
+
   /**
-   * if the obj is a ElementList return it, otherwise wrap the node in a ElementList
+   * if the obj is a DOMArray return it, otherwise wrap the node in a DOMArray
    */
   getNodes(obj) {
-    if (obj instanceof ElementList) return obj;
-    return new ElementList(obj);
+    if (obj instanceof DOMArray) return obj;
+    return new DOMArray(obj);
   }
+
   /**
    * return the native el of the first element in the list
    */
@@ -266,7 +299,7 @@ class ElementList extends Array {
       // adopt references
       const name = element.getAttribute('data-ref');
       if (name) {
-        targetObject[name] = new ElementList(element);
+        targetObject[name] = new DOMArray(element);
       }
       // add event handlers
       [...element.attributes,].forEach(attr => {
@@ -278,6 +311,7 @@ class ElementList extends Array {
     });
     return this;
   }
+
   /**
    * reverse the actions of zip. Remove references and remove event listeners
    */
@@ -298,6 +332,7 @@ class ElementList extends Array {
     });
     return this;
   }
+
   /**
    * utility function. Used in zip, unzip for example. Traverses all nodes and their
    * children in the list invoking the callback for each one
@@ -331,7 +366,7 @@ class ElementList extends Array {
   /**
    * remove white space separated class names from the classList of each node
    * @param classes
-   * @returns {ElementList}
+   * @returns {DOMArray}
    */
   removeClasses(classes) {
     classes.split(' ')
@@ -360,11 +395,11 @@ class ElementList extends Array {
   }
 
   /**
-   * return a new ElementList contain a deep cloned copy
+   * return a new DOMArray contain a deep cloned copy
    * each node
    */
   clone() {
-    return new ElementList([...this.map(n => n.cloneNode(true)),]);
+    return new DOMArray([...this.map(n => n.cloneNode(true)),]);
   }
 
   /**
@@ -437,8 +472,8 @@ class ElementList extends Array {
 }
 
 /**
- * We export a factory function for ElementList so there is no need to the new operator
+ * We export a factory function for DOMArray so there is no need to the new operator
  */
 export default function D() {
-  return new ElementList(...arguments);
+  return new DOMArray(...arguments);
 };

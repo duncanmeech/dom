@@ -3,7 +3,7 @@ import path from 'path';
 import 'core-js';
 import D from '../dist/index';
 
-describe('DOM Library Tests', () => {
+describe('DOMArray Module Tests', () => {
 
   // clear the DOM before each test
   beforeEach(() => {
@@ -30,7 +30,6 @@ describe('DOM Library Tests', () => {
     expect(D).not.toBe(null);
   });
 
-  // test that we can use a CSS selector to create lists.
   it('Test list creation with CSS selectors', () => {
     const fixture = `
       <div class="ABC">
@@ -51,7 +50,7 @@ describe('DOM Library Tests', () => {
 
   });
 
-  // test that we can create elements with a template literal
+
   it('Test list creation with template literals', () => {
     const template = D(`<div class="ABC">
                             <p class="xyz">
@@ -63,6 +62,16 @@ describe('DOM Library Tests', () => {
 
     expect(document.body.querySelectorAll('.ABC').length).toEqual(1);
     expect(document.body.querySelectorAll('.xyz').length).toEqual(2);
+
+  });
+
+
+  it('Test list creation with raw elements and/or another DOMArray', () => {
+
+    let da = D(document.head, document.body);
+    expect(da.length).toEqual(2);
+    da = D(document.head, D(document.head, document.body));
+    expect(da.length).toEqual(3);
 
   });
 });
