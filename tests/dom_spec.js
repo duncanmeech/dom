@@ -270,7 +270,9 @@ describe('DOMArray Module Tests', () => {
     expect(document.querySelectorAll('.DEF').length).toEqual(2);
     expect(document.querySelectorAll('.GHI').length).toEqual(2);
 
-    template.clone().appendTo(document.body);
+    const clone = template.clone();
+    expect(template.length).toEqual(2);
+    clone.appendTo(document.body);
     expect(document.querySelectorAll('.ABC').length).toEqual(4);
     expect(document.querySelectorAll('.DEF').length).toEqual(4);
     expect(document.querySelectorAll('.GHI').length).toEqual(4);

@@ -412,7 +412,8 @@ class DOMArray extends Array {
    * each node
    */
   clone() {
-    return new DOMArray([...this.map(n => n.cloneNode(true)),]);
+    const clones = this.map(n => n.cloneNode(true));
+    return new DOMArray(...clones);
   }
 
   /**
