@@ -159,7 +159,7 @@ class DOMArray extends Array {
     // use a temporary DIV and insertAdjacentHTML to construct the DOM
     const d = document.createElement('DIV');
     d.insertAdjacentHTML('afterbegin', template);
-    // normalize the context to remove extraneous white space
+    // normalize the context to remove extraneous white space / text content nodes
     d.normalize();
     // add childNode directly into our list
     this.push(...d.childNodes);
@@ -174,7 +174,6 @@ class DOMArray extends Array {
   createFromElements(...args) {
     // only remaining option is that each argument is a DOM node or possible another elements list
     args.forEach((arg, index) => {
-      console.log(`testing ${index}: ${arg.toString()}`);
       if (arg instanceof DOMArray) {
         this.push(...arg);
       } else {
@@ -267,6 +266,18 @@ class DOMArray extends Array {
       while (element.firstChild) {
         element.removeChild(element.firstChild);
       }
+    });
+    return this;
+  }
+
+  /**
+   * appendTo parents all the top level elements in the list to
+   * the given element. Which can be a native element or a DOMArray ( in which case
+   * the elements are append to the first element in the list )
+   */
+  appendTo(parent) {
+    this.forEach(node => {
+      this.getNode(parent).appendChild(node);
     });
     return this;
   }

@@ -1,6 +1,6 @@
 {
   "name": "DOMArray",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": false,
   "author": "Duncan Meech<duncanmeech@gmail.com>",
   "description": "Lightweight DOM manipulation.",

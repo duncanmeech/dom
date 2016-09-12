@@ -175,5 +175,108 @@ describe('DOMArray Module Tests', () => {
 
   });
 
+  it('Test that we can remove all children', () => {
+
+    const template = D(`<div>
+                            <div class="ABC"></div>
+                            <div class="ABC"></div>
+                        </div>`);
+    D(document.body).appendChild(template.el);
+
+    expect(template.children.length).toEqual(2);
+    template.empty();
+    expect(template.children.length).toEqual(0);
+
+  });
+
+  it('Test that we can append multiple elements to a single parent', () => {
+
+    const template = D(`<div></div><div></div>`);
+    template.appendTo(D(document.body, document.head));
+
+    expect(template[0].parentElement).toEqual(document.body);
+    expect(template[1].parentElement).toEqual(document.body);
+
+  });
+
+  it('Test that we can remove elements in a list from their parents', () => {
+
+    const template = D(`<div></div>`);
+    D(document.body).appendChild(template.el);
+
+    expect(template.parentElement).not.toBeNull();
+    template.remove();
+    expect(template.parentElement).toBeNull();
+
+  });
+
+  it('Test that we can add/remove classes', () => {
+
+    const template = D(`<div></div><span></span>`);
+    template.appendTo(document.body);
+    template.addClasses('one two three');
+
+    expect(document.querySelectorAll('.one').length).toEqual(2);
+    expect(document.querySelectorAll('.two').length).toEqual(2);
+    expect(document.querySelectorAll('.three').length).toEqual(2);
+
+    expect(document.querySelectorAll('DIV.one').length).toEqual(1);
+    expect(document.querySelectorAll('SPAN.one').length).toEqual(1);
+    expect(document.querySelectorAll('DIV.two').length).toEqual(1);
+    expect(document.querySelectorAll('SPAN.two').length).toEqual(1);
+
+    template.removeClasses('one two');
+    expect(document.querySelectorAll('.one').length).toEqual(0);
+    expect(document.querySelectorAll('.two').length).toEqual(0);
+    expect(document.querySelectorAll('.three').length).toEqual(2);
+
+  });
+
+  it('Test that we can conditionally add/remove classes', () => {
+
+    const template = D(`<div></div><span></span>`);
+    template.appendTo(document.body);
+    template.classesConditional('one two three', true);
+
+    expect(document.querySelectorAll('.one').length).toEqual(2);
+    expect(document.querySelectorAll('.two').length).toEqual(2);
+    expect(document.querySelectorAll('.three').length).toEqual(2);
+
+    expect(document.querySelectorAll('DIV.one').length).toEqual(1);
+    expect(document.querySelectorAll('SPAN.one').length).toEqual(1);
+    expect(document.querySelectorAll('DIV.two').length).toEqual(1);
+    expect(document.querySelectorAll('SPAN.two').length).toEqual(1);
+
+    template.classesConditional('one two', false);
+    expect(document.querySelectorAll('.one').length).toEqual(0);
+    expect(document.querySelectorAll('.two').length).toEqual(0);
+    expect(document.querySelectorAll('.three').length).toEqual(2);
+
+  });
+
+  // it('Test that we can clone instances', () => {
+  //
+  //   const template = D(`<div class="ABC">
+  //                           <div class="DEF"></div>
+  //                           <div class="GHI"></div>
+  //                       </div>
+  //                       <div class="ABC">
+  //                           <div class="DEF"></div>
+  //                           <div class="GHI"></div>
+  //                       </div>`);
+  //   expect(template.length).toEqual(2);
+  //   template.appendTo(document.body);
+  //   expect(document.querySelectorAll('.ABC').length).toEqual(2);
+  //   expect(document.querySelectorAll('.DEF').length).toEqual(2);
+  //   expect(document.querySelectorAll('.GHI').length).toEqual(2);
+  //
+  //   template.clone().appendTo(document.body);
+  //   expect(document.querySelectorAll('.ABC').length).toEqual(4);
+  //   expect(document.querySelectorAll('.DEF').length).toEqual(4);
+  //   expect(document.querySelectorAll('.GHI').length).toEqual(4);
+  //
+  // });
+
+
 
 });
