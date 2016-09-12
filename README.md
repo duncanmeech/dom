@@ -1,5 +1,15 @@
-# DOM 
+# DOMArray
+ 
 https://github.com/duncanmeech/dom
+
+To add to your application
+```npm install DOMArray --save```
+
+To use in some module
+```javascript
+import D from 'DOMArray';
+```
+
 
 DOMArray is a small library that I developed to assist with DOM manipulation in a browser running JavaScript. 
 
@@ -28,15 +38,8 @@ suffers from poor performance in certain areas.
 
 # Implementation
 
-DOMArray attempts to address these issues with a very lightweight library ( < 7Kb optimized, < 0.5KLoc ). DOMArray is written for
-applications developed in ES7 since it takes advantage of several advances in the JavaScript standard.
-
-Although the library will shortly be converted to an NPM module the best way to use it right now is to just
-take dom.js into your app and require or import it e.g.
-
-```javascript
-import D from '../dom/dom';
-```
+DOMArray attempts to address these issues with a very lightweight library ( < 7Kb optimized, < 0.5KLoc ). Fat arrow class methods
+are useful in conjunction with DOMArray but it can be used with ES5 with no problems.
 
 To assist with condensing your code the actual export from the module is a function that simply calls the constructor
 and passes along your arguments i.e.

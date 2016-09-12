@@ -52,6 +52,7 @@ const properties = [
   'name',
   'title',
   'value',
+  'style',
 ];
 
 /**

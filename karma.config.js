@@ -24,8 +24,7 @@ module.exports = function (config) {
       'karma-spec-reporter',
       'karma-babel-preprocessor',
     ],
-    //browsers: [ 'PhantomJS', 'Chrome', 'Firefox' ],
-    browsers: [ 'Chrome' ],
+    browsers: [ 'PhantomJS', 'Chrome', 'Firefox' ],
     preprocessors: {
       'tests/**/*_spec.js': ['webpack'],
     },
