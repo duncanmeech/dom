@@ -254,28 +254,28 @@ describe('DOMArray Module Tests', () => {
 
   });
 
-  // it('Test that we can clone instances', () => {
-  //
-  //   const template = D(`<div class="ABC">
-  //                           <div class="DEF"></div>
-  //                           <div class="GHI"></div>
-  //                       </div>
-  //                       <div class="ABC">
-  //                           <div class="DEF"></div>
-  //                           <div class="GHI"></div>
-  //                       </div>`);
-  //   expect(template.length).toEqual(2);
-  //   template.appendTo(document.body);
-  //   expect(document.querySelectorAll('.ABC').length).toEqual(2);
-  //   expect(document.querySelectorAll('.DEF').length).toEqual(2);
-  //   expect(document.querySelectorAll('.GHI').length).toEqual(2);
-  //
-  //   template.clone().appendTo(document.body);
-  //   expect(document.querySelectorAll('.ABC').length).toEqual(4);
-  //   expect(document.querySelectorAll('.DEF').length).toEqual(4);
-  //   expect(document.querySelectorAll('.GHI').length).toEqual(4);
-  //
-  // });
+  it('Test that we can clone instances', () => {
+
+    const template = D(`<div class="ABC">
+                            <div class="DEF"></div>
+                            <div class="GHI"></div>
+                        </div>
+                        <div class="ABC">
+                            <div class="DEF"></div>
+                            <div class="GHI"></div>
+                        </div>`);
+    expect(template.length).toEqual(2);
+    template.appendTo(document.body);
+    expect(document.querySelectorAll('.ABC').length).toEqual(2);
+    expect(document.querySelectorAll('.DEF').length).toEqual(2);
+    expect(document.querySelectorAll('.GHI').length).toEqual(2);
+
+    template.clone().appendTo(document.body);
+    expect(document.querySelectorAll('.ABC').length).toEqual(4);
+    expect(document.querySelectorAll('.DEF').length).toEqual(4);
+    expect(document.querySelectorAll('.GHI').length).toEqual(4);
+
+  });
 
 
 

@@ -161,8 +161,9 @@ class DOMArray extends Array {
     d.insertAdjacentHTML('afterbegin', template);
     // normalize the context to remove extraneous white space / text content nodes
     d.normalize();
-    // add childNode directly into our list
-    this.push(...d.childNodes);
+    // add children directly into our list ( we avoid childNodes because that would pick
+    // up empty text nodes which is a problem when using multiline template strings
+    this.push(...d.children);
     // remove all the children of the temporary div, so that the newly created top level nodes will be unparented
     while (d.firstChild) d.removeChild(d.firstChild);
   }
@@ -173,7 +174,7 @@ class DOMArray extends Array {
    */
   createFromElements(...args) {
     // only remaining option is that each argument is a DOM node or possible another elements list
-    args.forEach((arg, index) => {
+    args.forEach(arg => {
       if (arg instanceof DOMArray) {
         this.push(...arg);
       } else {
