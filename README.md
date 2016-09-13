@@ -1,4 +1,5 @@
 # DOMArray
+[![Build Status](https://travis-ci.org/duncanmeech/dom.svg?branch=master)](https://travis-ci.org/duncanmeech/dom)
  
 https://github.com/duncanmeech/dom
 
