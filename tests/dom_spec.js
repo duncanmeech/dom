@@ -416,7 +416,10 @@ describe('DOMArray Module Tests', () => {
     // helper methods that can be chained. Verify no exceptions and that they return the list
     expect(list.setStyles({})).toEqual(list);
     expect(list.appendTo(document.body)).toEqual(list);
+
+    // cannot call zip twice
+    list.zip({});
+    expect(list.zip({})).toThrowError();
+
   });
-
-
 });
