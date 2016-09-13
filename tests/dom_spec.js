@@ -279,6 +279,131 @@ describe('DOMArray Module Tests', () => {
 
   });
 
+  it('Test that we can traverse a parent / child tree', () => {
+
+    const template = D(`<div class="ABC">
+                            <div class="DEF">
+                                <div class="GHI"></div>
+                            </div>
+                        </div>`);
+
+    const found = {
+      ABC: 0,
+      DEF: 0,
+      GHI: 0,
+    };
+
+    template.traverse(element => {
+      found[element.className] += 1;
+    });
+
+    expect(found.ABC).toEqual(1);
+    expect(found.DEF).toEqual(1);
+    expect(found.GHI).toEqual(1);
+
+    expect(Object.keys(found).length).toEqual(3);
+  });
+
+  it('Test that we can sink events', () => {
+
+    const handler = (evt) => {
+      evt.target.setAttribute('clicked', 'one');
+    };
+
+    // single element, single event with capture
+    const template = D(`<button></button>`);
+    template.on('click', handler, true);
+    template.click();
+    expect(template.getAttribute('clicked')).toEqual('one');
+
+    // remove handler and click again
+    template.off('click', handler, true);
+    template.setAttribute('clicked', 'two');
+    template.click();
+    // attribute value should not have changed, indicated event handler
+    // was removed
+    expect(template.getAttribute('clicked')).toEqual('two');
+
+  });
+
+  it('Test that off respects the capture flag', () => {
+    const handler = (evt) => {
+      evt.target.setAttribute('clicked', 'one');
+    };
+
+    // single element, single event with capture
+    const template = D(`<button></button>`);
+    template.on('click', handler, true);
+    template.click();
+    expect(template.getAttribute('clicked')).toEqual('one');
+
+    // remove handler but with wrong capture flag, it should not be removed
+    template.off('click', handler, false);
+    template.setAttribute('clicked', 'two');
+    template.click();
+    // handler should have been called
+    expect(template.getAttribute('clicked')).toEqual('one');
+
+  });
+
+  it('Test that we can remove all handlers for a given event', () => {
+    const handler = (evt) => {
+      evt.target.setAttribute('clicked', 'one');
+    };
+
+    // single element, single event with capture
+    const template = D(`<button></button>`);
+    // add handler twice with different capture flags
+    template.on('click', handler, true);
+    template.on('click', handler, false);
+    template.click();
+    expect(template.getAttribute('clicked')).toEqual('one');
+
+    // remove all click handlers
+    template.off('click');
+    template.setAttribute('clicked', 'two');
+    template.click();
+    // handler should not have been called
+    expect(template.getAttribute('clicked')).toEqual('two');
+
+  });
+
+  it('Test that we can zip/unzip a template to an object', () => {
+
+    const template = D(`<div data-ref="outer" class="outer">
+                          <button data-ref="button" data-event-click="onClick" class="xyz">Click Me</button>
+                        </div>`);
+
+    let buttonClicked = false;
+    const target = {
+      onClick: evt => {
+        buttonClicked = true;
+      }
+    };
+
+    template.zip(target);
+
+    expect(target.outer.tagName.toLocaleLowerCase()).toEqual('div');
+    expect(target.outer.className).toEqual('outer');
+
+    expect(target.button.tagName.toLocaleLowerCase()).toEqual('button');
+    expect(target.button.className).toEqual('xyz');
+
+    target.button.click();
+    expect(buttonClicked).toBeTruthy();
+
+    // unzip and expect target object to be torn down
+    template.unzip(target);
+
+    expect(target.outer).toBeFalsy();
+    expect(target.button).toBeFalsy();
+    buttonClicked = false;
+    // click the button again but we can't use the reference in target of course
+    template.el.children[0].click();
+    // click handler should not have been called
+    expect(buttonClicked).toBeFalsy();
+
+  });
 
 
 });

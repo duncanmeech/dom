@@ -27,6 +27,7 @@ const properties = [
   'r+parentElement',
   'r+parentNode',
   'textContent',
+  'r+tagName',
   // Element properties
   'r+attributes',
   'r+childElementCount',
@@ -305,6 +306,12 @@ class DOMArray extends Array {
    * to ensure 'this' is correct.
    */
   zip(targetObject) {
+    // zipping/unzipping should occur serially and once
+    if (this.zipped) {
+      throw new Error('DOMArray has already been zipped')
+    }
+    this.zipped = true;
+
     // we could use a CSS selector to find the data-ref attributes but for
     // event attribute (data-event-*) there is no available selector so
     // we walk the tree of elements using a stack.
@@ -318,7 +325,17 @@ class DOMArray extends Array {
       [...element.attributes,].forEach(attr => {
         const tokens = attr.localName.split('-');
         if (tokens[0] === 'data' && tokens[1] === 'event') {
-          element.addEventListener(tokens[2], targetObject[attr.value].bind(targetObject));
+          // create a record of each handler added so we can remove when unzip is called
+          const record = {
+            handler: targetObject[attr.value].bind(targetObject),
+            event: tokens[2],
+            capture: false,
+            element,
+          };
+          this.zipHandlers = this.zipHandlers || [];
+          this.zipHandlers.push(record);
+
+          element.addEventListener(record.event, record.handler, record.capture);
         }
       });
     });
@@ -329,6 +346,9 @@ class DOMArray extends Array {
    * reverse the actions of zip. Remove references and remove event listeners
    */
   unzip(targetObject) {
+    if (!this.zipped) {
+      throw new Error('DOMArray instance is not zipped');
+    }
     this.traverse(element => {
       // remove references
       const name = element.getAttribute('data-ref');
@@ -336,13 +356,15 @@ class DOMArray extends Array {
         delete targetObject[name];
       }
       // remove event handlers
-      [...element.attributes,].forEach(attr => {
-        const tokens = attr.localName.split('-');
-        if (tokens[0] === 'data' && tokens[1] === 'event') {
-          element.removeEventListener(tokens[2], targetObject[attr.value]);
-        }
-      });
+      if (this.zipHandlers) {
+        this.zipHandlers.forEach(record => {
+          record.element.removeEventListener(record.event, record.handler, record.capture);
+        });
+        this.zipHandlers = null;
+      }
+
     });
+    this.zipped = false;
     return this;
   }
 
@@ -425,8 +447,8 @@ class DOMArray extends Array {
     // listeners group by event name is an object ( since event is a string ) but the
     // handlers for each event are stored in a map which can take a function as a key.
     this.listeners = this.listeners || {};
-    this.listeners[event] = this.listeners[event] || new Map();
-    this.listeners[event].set(handler, {handler, capture,});
+    this.listeners[event] = this.listeners[event] || [];
+    this.listeners[event].push({handler, capture,});
     this.forEach(n => n.addEventListener(event, handler, capture));
     return this;
   }
@@ -440,7 +462,7 @@ class DOMArray extends Array {
   off(event, handler, capture = false) {
     // ignore if we don't have any listeners
     if (!this.listeners) {
-      return;
+      return this;
     }
     // if no event or handler then remove all registered events
     if (!event && !handler) {
@@ -466,18 +488,14 @@ class DOMArray extends Array {
         // remove the specific listener if it is present, by finding the record with the handler
         // ( the capture flag must match as well )
         if (this.listeners[event]) {
-          let matchedRecord;
-          this.listeners[event].forEach(record => {
-            if (record.handler === handler && record.capture === capture) {
-              matchedRecord = record;
-            }
+          const index = this.listeners[event].findIndex(record => {
+            return record.handler === handler && record.capture === capture;
           });
-          if (matchedRecord) {
-            this.listeners[event].delete(matchedRecord);
-            this.forEach(n => n.removeEventListener(event, matchedRecord.handler, matchedRecord.capture));
+          if (index >= 0) {
+            const record = this.listeners[event][index];
+            this.forEach(n => n.removeEventListener(event, record.handler, record.capture));
+            this.listeners[event].splice(index, 1);
           }
-          // remove just this record
-          this.listeners[event].delete(matchedRecord);
         }
       }
     }
