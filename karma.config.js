@@ -24,7 +24,9 @@ module.exports = function (config) {
       'karma-spec-reporter',
       'karma-babel-preprocessor',
     ],
-    browsers: [ 'PhantomJS', 'Chrome', 'Firefox' ],
+    // locally I test in browsers as well, but for Travis CI I only use headless PhantomJS
+    //browsers: [ 'PhantomJS', 'Chrome', 'Firefox' ],
+    browsers: [ 'PhantomJS' ],
     preprocessors: {
       'tests/**/*_spec.js': ['webpack'],
     },
