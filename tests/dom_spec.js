@@ -405,5 +405,18 @@ describe('DOMArray Module Tests', () => {
 
   });
 
+  it('Verify that various methods are safe to call on empty lists', () => {
+
+    const list = D();
+    // properties
+    expect(list.focus()).toBeFalsy();
+    expect(list.outerHTML).toBeFalsy();
+    expect(list.focus()).toBeFalsy();
+
+    // helper methods that can be chained. Verify no exceptions and that they return the list
+    expect(list.setStyles({})).toEqual(list);
+    expect(list.appendTo(document.body)).toEqual(list);
+  });
+
 
 });

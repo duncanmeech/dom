@@ -245,13 +245,6 @@ class DOMArray extends Array {
     return obj;
   }
 
-  /**
-   * if the obj is a DOMArray return it, otherwise wrap the node in a DOMArray
-   */
-  getNodes(obj) {
-    if (obj instanceof DOMArray) return obj;
-    return new DOMArray(obj);
-  }
 
   /**
    * return the native el of the first element in the list
