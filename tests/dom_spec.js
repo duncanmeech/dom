@@ -368,6 +368,28 @@ describe('DOMArray Module Tests', () => {
 
   });
 
+  it('Test that we can remove all handlers attached to element', () => {
+    const handler = (evt) => {
+      evt.target.setAttribute('clicked', 'one');
+    };
+
+    // single element, single event with capture
+    const template = D(`<button></button>`);
+    // add handler twice with different capture flags
+    template.on('click', handler, true);
+    template.on('click', handler, false);
+    template.click();
+    expect(template.getAttribute('clicked')).toEqual('one');
+
+    // remove all handlers
+    template.off();
+    template.setAttribute('clicked', 'two');
+    template.click();
+    // handler should not have been called
+    expect(template.getAttribute('clicked')).toEqual('two');
+
+  });
+
   it('Test that we can zip/unzip a template to an object', () => {
 
     const template = D(`<div data-ref="outer" class="outer">
@@ -418,8 +440,14 @@ describe('DOMArray Module Tests', () => {
     expect(list.appendTo(document.body)).toEqual(list);
 
     // cannot call zip twice
-    list.zip({});
-    expect(list.zip({})).toThrowError();
+    const target = {};
+    list.zip(target);
+    expect(list.zip.bind(list, target)).toThrow();
+
+    // first unzip should be fine
+    list.unzip(target);
+    // second should throw
+    expect(list.unzip.bind(list, target)).toThrow();
 
   });
 });
