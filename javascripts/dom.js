@@ -301,7 +301,7 @@ class DOMArray extends Array {
   zip(targetObject) {
     // zipping/unzipping should occur serially and once
     if (this.zipped) {
-      throw new Error('DOMArray has already been zipped')
+      throw new Error('DOMArray has already been zipped');
     }
     this.zipped = true;
 

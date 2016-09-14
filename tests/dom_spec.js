@@ -442,10 +442,12 @@ describe('DOMArray Module Tests', () => {
     // cannot call zip twice
     const target = {};
     list.zip(target);
+    expect(list.zipped).toEqual(true);
     expect(list.zip.bind(list, target)).toThrow();
 
     // first unzip should be fine
     list.unzip(target);
+    expect(list.zipped).toEqual(false);
     // second should throw
     expect(list.unzip.bind(list, target)).toThrow();
 
