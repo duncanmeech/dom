@@ -35,10 +35,7 @@ const output = {
 // ===========================================================================
 const debug = {
   entry,
-  output : {
-    libraryTarget: 'umd',
-    filename     : "./dist/index.js",
-  },
+  output,
   module : modules,
   devtool: "inline-source-map",
 };

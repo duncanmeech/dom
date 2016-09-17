@@ -371,7 +371,10 @@ class DOMArray extends Array {
       while (stack.length) {
         const element = stack.pop();
         callback.call(this, element);
-        stack = stack.concat(...element.children);
+        // PhantomJS et al hack...no children on things like SVG
+        if (element.children) {
+          stack = stack.concat(...element.children);
+        }
       }
     });
     return this;
