@@ -164,7 +164,7 @@ class DOMArray extends Array {
     d.normalize();
     // add children directly into our list ( we avoid childNodes because that would pick
     // up empty text nodes which is a problem when using multiline template strings
-    this.push(...d.children);
+    this.push(...this.getChildren(d));
     // remove all the children of the temporary div, so that the newly created top level nodes will be unparented
     while (d.firstChild) d.removeChild(d.firstChild);
   }
@@ -321,7 +321,7 @@ class DOMArray extends Array {
           // create a record of each handler added so we can remove when unzip is called
           const record = {
             handler: targetObject[attr.value].bind(targetObject),
-            event: tokens[2],
+            event  : tokens[2],
             capture: false,
             element,
           };
@@ -371,13 +371,28 @@ class DOMArray extends Array {
       while (stack.length) {
         const element = stack.pop();
         callback.call(this, element);
-        // PhantomJS et al hack...no children on things like SVG
-        if (element.children) {
-          stack = stack.concat(...element.children);
-        }
+        stack = stack.concat(...this.getChildren(element));
       }
     });
     return this;
+  }
+
+  /**
+   * get only the element children of a node, allowing for the possibility the .children doesn't exist ( e.g. SVG tag )
+   * and filter the child nodes.
+   * @param n
+   * @returns Array
+   */
+  getChildren(element) {
+    if (element.children) {
+      return Array.from(element.children);
+    } else {
+      // filter childNodes to only elements
+      if (element.childNodes) {
+        return Array.from(element.childNodes).filter(n => n.nodeType === document.ELEMENT_NODE);
+      }
+    }
+    return [];
   }
 
   /**

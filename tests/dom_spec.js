@@ -75,6 +75,14 @@ describe('DOMArray Module Tests', () => {
 
   });
 
+  it('Verify text nodes are preserved', () => {
+
+    const da = D(`<div>Duncan<span>Meech</span></div>`);
+    expect(da.innerText).toEqual('DuncanMeech');
+
+  });
+
+
   it('Test native properties on a single element', () => {
 
     const template = D(`<div title="My Title"></div>`);
@@ -452,4 +460,38 @@ describe('DOMArray Module Tests', () => {
     expect(list.unzip.bind(list, target)).toThrow();
 
   });
+
+
+
+  it('Verify that nothing breaks when the list contains SVG ( non HTML ) elemennts', () => {
+
+    const SVGNS = "http://www.w3.org/2000/svg";
+    const svg = D(`<svg  xmlns="${SVGNS}"
+                         xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <rect x="10" 
+                              y="10" 
+                              height="100" 
+                              width="100"
+                        />
+                    </svg>`);
+
+    // NOTE: especially in PhantomJS, the template may contain #text nodes due to the use
+    // of multiline strings, also children property is not supported on non HTML nodes in Phantom
+    // so we have to find the rect ourselves.
+
+    // find rect element
+    let rect = null;
+    svg.traverse(n => {
+      if (n.nodeType === document.ELEMENT_NODE && n.nodeName.toLowerCase() === 'rect') {
+        rect = n;
+      }
+    });
+    expect(rect.nodeName.toLowerCase()).toEqual('rect');
+
+    // try some methods on rect element as DOMArray
+    const rlist = D(rect);
+    rlist.setAttributeNS(SVGNS, 'stroke-width', '3px');
+    expect(rlist.getAttributeNS(SVGNS, 'stroke-width')).toEqual('3px');
+  });
+
 });
