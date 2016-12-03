@@ -53,6 +53,7 @@ const properties = [
   'name',
   'title',
   'value',
+  'checked',
   'style',
 ];
 

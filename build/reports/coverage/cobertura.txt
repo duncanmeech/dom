@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
-<coverage lines-valid="235"  lines-covered="225"  line-rate="0.9573999999999999"  branches-valid="150"  branches-covered="113"  branch-rate="0.7533"  timestamp="1474139432748" complexity="0" version="0.1">
+<coverage lines-valid="235"  lines-covered="225"  line-rate="0.9573999999999999"  branches-valid="150"  branches-covered="113"  branch-rate="0.7533"  timestamp="1480770263085" complexity="0" version="0.1">
 <sources>
 	<source>/Users/meechd/dev/dom</source>
 </sources>
@@ -66,8 +66,8 @@
 			<method name="injectMethodsAndProperties"  hits="46"  signature="()V" >
 				<lines><line number="206"  hits="46" /></lines>
 			</method>
-			<method name="(anonymous_20)"  hits="1748"  signature="()V" >
-				<lines><line number="210"  hits="1748" /></lines>
+			<method name="(anonymous_20)"  hits="1794"  signature="()V" >
+				<lines><line number="210"  hits="1794" /></lines>
 			</method>
 			<method name="(anonymous_21)"  hits="966"  signature="()V" >
 				<lines><line number="225"  hits="966" /></lines>
@@ -312,11 +312,11 @@
 			<line number="204"  hits="1"  branch="false" />
 			<line number="207"  hits="46"  branch="false" />
 			<line number="210"  hits="46"  branch="false" />
-			<line number="212"  hits="1748"  branch="false" />
-			<line number="213"  hits="1748"  branch="true"  condition-coverage="100% (2/2)" />
-			<line number="214"  hits="1748"  branch="true"  condition-coverage="100% (2/2)" />
-			<line number="216"  hits="1748"  branch="false" />
-			<line number="221"  hits="1748"  branch="false" />
+			<line number="212"  hits="1794"  branch="false" />
+			<line number="213"  hits="1794"  branch="true"  condition-coverage="100% (2/2)" />
+			<line number="214"  hits="1794"  branch="true"  condition-coverage="100% (2/2)" />
+			<line number="216"  hits="1794"  branch="false" />
+			<line number="221"  hits="1794"  branch="false" />
 			<line number="225"  hits="46"  branch="false" />
 			<line number="226"  hits="966"  branch="false" />
 			<line number="241"  hits="7"  branch="true"  condition-coverage="100% (2/2)" />
