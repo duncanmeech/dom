@@ -55,6 +55,7 @@ const properties = [
   'value',
   'checked',
   'style',
+  'disabled',
 ];
 
 /**
@@ -77,6 +78,8 @@ const methods = [
   'getAttributeNS',
   'setAttribute',
   'setAttributeNS',
+  'removeAttribute',
+  'removeAttributeNS',
   'addEventListener',
   'removeEventListener',
   'normalize',
