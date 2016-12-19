@@ -400,8 +400,8 @@ describe('DOMArray Module Tests', () => {
 
   it('Test that we can zip/unzip a template to an object', () => {
 
-    const template = D(`<div data-ref="outer" class="outer">
-                          <button data-ref="button" data-event-click="onClick" class="xyz">Click Me</button>
+    const template = D(`<div r="outer" class="outer">
+                          <button r="button" e-click="onClick" class="xyz">Click Me</button>
                         </div>`);
 
     let buttonClicked = false;
