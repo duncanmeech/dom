@@ -313,13 +313,13 @@ from a template literal string and then uses the zip method.
 ```javascript
     // construct our DOM as a DOMArray
     this.outer = D(
-      `<div class="viewer" tabindex="0" data-event-focus="onFocus" data-event-blur="onBlur">
-        <div class="menu" data-ref="menu">
-          <button data-ref="reverseStrandButton" data-event-click="onReverseStrandClicked">Reverse Strand</button>
-          <button data-ref="rulerButton" data-event-click="onRulerClicked">Ruler</button>
-          <button data-ref="flattenButton" data-event-click="onFlattenClicked">Flatten</button>
+      `<div class="viewer" tabindex="0" e-focus="onFocus" e-blur="onBlur">
+        <div class="menu" r="menu">
+          <button r="reverseStrandButton" e-click="onReverseStrandClicked">Reverse Strand</button>
+          <button r="rulerButton" e-click="onRulerClicked">Ruler</button>
+          <button r="flattenButton" e-click="onFlattenClicked">Flatten</button>
         </div>
-        <div class="rows" data-ref="rowsContainer"></div>
+        <div class="rows" r="rowsContainer"></div>
        </div>`
     );
     // bind elements and event handlers
@@ -329,16 +329,16 @@ from a template literal string and then uses the zip method.
 ```
 
 In this example a shallow DOM structure is constructed with an outer DIV element of the class '.viewer'. This viewer
-element has DOMArray specific attributes: data-event-focus and data-event-blur. These indicate that we are interested in
+element has DOMArray specific attributes: e-focus and e-blur. These indicate that we are interested in
 binding the events 'focus' and 'blur' to some other object. When we can zip we specific the target object to bind with.
 In this case we simple pass 'this' since this method is a class instance method. The DOMArray library then looks for the
 matching method(s) (onFocus and onBlur) and calls Node::addEventListener for each event, binding to the named handler.
 
-Any event can be bound to in this way. Just add the name of the event to the end of the attribute ( e.g. data-event-click )
+Any event can be bound to in this way. Just add the name of the event to the end of the attribute ( e.g. e-click )
 and the name of the method that handles the event on the target object.
 
 An another useful feature of zipping a template is that elements within the list can be bound to named properties on the target object.
-In the sample above various buttons include the attribute data-ref with a string value. After zipping to an object those
+In the sample above various buttons include the attribute 'r' with a string value. After zipping to an object those
 elements can be accessed directly e.g. this.rulerButton.click();
 
 Unzip reverses that actions of zip. It unbinds event handlers and element bindings ( but not any additional event listeners 
@@ -364,8 +364,8 @@ method. The resulting components responds to changes to the input by reflecting 
     document.head.appendChild(css.el);
 
     const template = D(`<div>
-                            <span class="red" data-ref="redSpan">Red Span</span>
-                            <input type="text" data-event-input="onInput"/>
+                            <span class="red" r="redSpan">Red Span</span>
+                            <input type="text" e-input="onInput"/>
                          </div>`);
     parent.appendChild(template.el);
     template.zip(this);
