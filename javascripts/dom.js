@@ -309,23 +309,26 @@ class DOMArray extends Array {
     }
     this.zipped = true;
 
-    // we could use a CSS selector to find the data-ref attributes but for
-    // event attribute (data-event-*) there is no available selector so
+    // we could use a CSS selector to find the 'r' attributes but for
+    // event attribute (e-???) there is no available selector so
     // we walk the tree of elements using a stack.
     this.traverse(element => {
       // adopt references
-      const name = element.getAttribute('data-ref');
+      const name = element.getAttribute('r');
       if (name) {
+        if (targetObject[name]) {
+          throw new Error('Element binding would overwrite an existing property.');
+        }
         targetObject[name] = new DOMArray(element);
       }
-      // add event handlers
+      // add event handlers...we expect something like e-click="onClick"
       [...element.attributes,].forEach(attr => {
         const tokens = attr.localName.split('-');
-        if (tokens[0] === 'data' && tokens[1] === 'event') {
+        if (tokens.length === 2 && tokens[0] === 'e' && tokens[1]) {
           // create a record of each handler added so we can remove when unzip is called
           const record = {
             handler: targetObject[attr.value].bind(targetObject),
-            event  : tokens[2],
+            event  : tokens[1],
             capture: false,
             element,
           };
@@ -348,7 +351,7 @@ class DOMArray extends Array {
     }
     this.traverse(element => {
       // remove references
-      const name = element.getAttribute('data-ref');
+      const name = element.getAttribute('r');
       if (name) {
         delete targetObject[name];
       }
